@@ -1,0 +1,17 @@
+---
+galaxy_info:
+  company: Idealista S.A.U
+  author: idealista
+  description: pgbouncer role
+  min_ansible_version: 2.9.2
+  license: Apache 2.0
+  platforms:
+    - name: Debian
+      versions:
+        - stretch
+        - buster
+        - bookworm
+    - name: EL
+      versions:
+        - 7
+        - 8

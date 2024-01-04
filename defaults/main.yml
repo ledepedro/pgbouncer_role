@@ -1,0 +1,49 @@
+---
+# ---------------------------------------------------------------------
+# Proxy variables (optional) for download packages using a proxy server
+proxy_env: {}  # yamllint disable rule:braces
+#  http_proxy: http://10.128.64.9:3128
+#  https_proxy: http://10.128.64.9:3128
+# ---------------------------------------------------------------------
+
+pg_superuser_username: "{{ patroni_superuser_username | default('postgres') }}"
+pg_superuser_password: "{{ patroni_superuser_password | default('postgres-pwd') }}"  # please change password
+
+pg_users_no_log: true  # if it's set to false the password will be printed after command execution (insecure)
+
+# PgBouncer parameters
+pgbouncer_install: "{{ pgbouncer.install | default(true) }}"  # or 'false' if you do not want to install and configure the pgbouncer service
+pgbouncer_conf_dir: "{{ pgbouncer.conf_dir | default('/etc/pgbouncer') }}"
+pgbouncer_log_dir: "{{ pgbouncer.log_dir | default('/var/log/pgbouncer') }}"
+pgbouncer_listen_addr: "{{ pgbouncer.listen_addr | default('0.0.0.0') }}"
+pgbouncer_listen_port: "{{ pgbouncer.listen_port | default(6432) }}"
+pgbouncer_max_client_conn: "{{ pgbouncer.max_client_conn | default(10000) }}"
+pgbouncer_max_db_connections: "{{ pgbouncer.max_db_connections | default(1000) }}"
+pgbouncer_default_pool_size: "{{ pgbouncer.default_pool_size | default(20) }}"
+pgbouncer_query_wait_timeout: "{{ pgbouncer.query_wait_timeout | default(120) }}"
+pgbouncer_default_pool_mode: "{{ pgbouncer.default_pool_mode | default('session') }}"
+pgbouncer_admin_users: "{{ pgbouncer.admin_users | default(pg_superuser_username) }}"  # comma-separated list of users, who are allowed to change settings
+pgbouncer_stats_users: "{{ pgbouncer.stats_users | default(pg_superuser_username) }}"  # comma-separated list of users who are just allowed to use SHOW command
+pgbouncer_ignore_startup_parameters: "{{ pgbouncer.ignore_startup_parameters | default('extra_float_digits,geqo,search_path') }}"
+pgbouncer_auth_type: "{{ pgbouncer.auth_type | default(postgresql_password_encryption_algorithm) }}"
+pgbouncer_auth_user: "{{ pgbouncer.auth_user | default(true) }}" # or 'false' if you want to manage the list of users for authentication in the database via userlist.txt
+pgbouncer_auth_hba_file: "{{ pgbouncer.auth_hba_file | default(pgbouncer_conf_dir + '/pg_hba.conf') }}" 
+pgbouncer_auth_username: "{{ pgbouncer.auth_username | default('pgbouncer') }}" # user who can query the database via the user_search function
+pgbouncer_auth_password: "{{ pgbouncer.auth_password | default('pgbouncer-pwd') }}" # please change password
+pgbouncer_auth_dbname: "{{ pgbouncer.auth_dbname | default('postgres') }}"
+pgbouncer_log_connections: "{{ pgbouncer.log_connections | default(0) }}"
+pgbouncer_log_disconnections: "{{ pgbouncer.log_disconnections | default(0) }}"
+
+pgbouncer_pools_default:
+  - { name: "postgres", dbname: "postgres", pool_parameters: "" }
+#  - { name: "mydatabase", dbname: "mydatabase", pool_parameters: "pool_size=20 pool_mode=transaction" }
+#  - { name: "", dbname: "", pool_parameters: "" }
+#  - { name: "", dbname: "", pool_parameters: "" }
+pgbouncer_pools: "{{ pgbouncer_pools_default | union(pgbouncer.pools | default([])) }}"
+
+pgbouncer_settings: "{{ pgbouncer.settings | default([]) }}"
+#  - { name: "query_timeout", value="0.0" }
+
+is_master: true
+
+...
